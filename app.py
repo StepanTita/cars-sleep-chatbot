@@ -1,23 +1,24 @@
 import random
 import time
+from threading import Thread
 import streamlit as st  # type: ignore
 
-st.title("ChatGPT-like clone")
+st.title("Sleep and Cars Expert models")
 
 QUESTIONS_TYPES = ["sleep", "cars"]
 PROMPTS = {
     "cars": {
         "system": "You are an expert in sleep science with in-depth knowledge of sleep physiology, circadian rhythms, sleep disorders, and the impact of sleep on health and cognitive performance. Your task is to generate insightful and varied answers on sleep-related topics. The answers should be diverse in complexity, suitable for learners and experts alike.",
-        "basic": "Human: Generate me an answer to the given question: {question}\n\nAssistant:",
-        "rag": "Use resources provided to answer the following question.\nResources: {resources}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
+        "basic": "Conversation history: {chat_history}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
+        "rag": "Conversation history: {chat_history}\n\nUse resources provided to answer the following question.\nResources: {resources}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
     },
     "sleep": {
         "system": "You are an expert in the history of automobiles with in-depth knowledge of the development of automobiles from the late 19th century to the present day. Your task is to generate insightful and varied answers on automobile history. The answers should be diverse in complexity, suitable for learners and experts alike.",
-        "basic": "Human: Generate me an answer to the given question: {question}\n\nAssistant:",
-        "rag": "Use resources provided to answer the following question.\nResources: {resources}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
+        "basic": "Conversation history: {chat_history}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
+        "rag": "Conversation history: {chat_history}\n\nUse resources provided to answer the following question.\nResources: {resources}\n\nHuman: Generate me an answer to the given question: {question}\n\nAssistant:",
     },
 }
-MAX_NEW_TOKENS = 8192
+MAX_NEW_TOKENS = 2048
 
 if "question_type_model" not in st.session_state:
     import joblib
@@ -26,19 +27,18 @@ if "question_type_model" not in st.session_state:
         st.session_state.question_type_model = joblib.load(f)
 
 if "sleep_model" not in st.session_state or "cars_model" not in st.session_state:
-    from threading import Thread
-
     import nltk
     import transformers
     from langchain.llms import HuggingFacePipeline
     from langchain.chains import LLMChain
     from langchain.prompts import PromptTemplate
-    from langchain_community.document_loaders import TextLoader  # type: ignore
-    from langchain.text_splitter import CharacterTextSplitter, NLTKTextSplitter  # type: ignore
-    from langchain.vectorstores import FAISS  # type: ignore
-    from langchain.embeddings.huggingface import HuggingFaceEmbeddings  # type: ignore
-    from langchain.schema.runnable import RunnablePassthrough  # type: ignore
-    from langchain.schema import Document  # type: ignore
+    from langchain.memory import ConversationBufferMemory
+    from langchain_community.document_loaders import TextLoader
+    from langchain.text_splitter import CharacterTextSplitter, NLTKTextSplitter
+    from langchain.vectorstores import FAISS
+    from langchain.embeddings.huggingface import HuggingFaceEmbeddings
+    from langchain.schema.runnable import RunnablePassthrough
+    from langchain.schema import Document
 
     nltk.download("punkt_tab")
 
@@ -59,14 +59,16 @@ if "sleep_model" not in st.session_state or "cars_model" not in st.session_state
         llama_llm = HuggingFacePipeline(pipeline=text_generation_pipeline)
 
         prompt = PromptTemplate(
-            input_variables=["question"] + ["resources"] if use_rag else [],
+            input_variables=["question", "chat_history"] + ["resources"] if use_rag else [],
             template=PROMPTS[task_type]["rag" if use_rag else "basic"],
         )
 
-        llm_chain = LLMChain(llm=llama_llm, prompt=prompt)
+        memory = ConversationBufferMemory(memory_key="chat_history", input_key="question")
+
+        llm_chain = LLMChain(llm=llama_llm, prompt=prompt, memory=memory)
 
         if not use_rag:
-            return llm_chain
+            return llm_chain, streamer
 
         loader = TextLoader(f"data/{task_type}.txt")
         docs = loader.load()
@@ -83,9 +85,13 @@ if "sleep_model" not in st.session_state or "cars_model" not in st.session_state
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
 
-        return ({"resources": retriever | format_docs, "question": RunnablePassthrough()} | llm_chain), streamer
+        return ({
+            "resources": retriever | format_docs, 
+            "question": RunnablePassthrough(), 
+            "chat_history": RunnablePassthrough()
+        } | llm_chain), streamer
 
-    st.session_state.sleep_model = load_model("sleep")
+    st.session_state.sleep_model = load_model("sleep", use_rag=False)
     st.session_state.cars_model = load_model("cars")
 
 if "messages" not in st.session_state:
@@ -112,6 +118,7 @@ if prompt := st.chat_input("Ask any question about cars history or sleep"):
     thread.start()
 
     def response_generator(streamer):
+        yield f"Routing to the model: **{task_type.upper()}**\n\n"
         for text in streamer:
             yield text
 
