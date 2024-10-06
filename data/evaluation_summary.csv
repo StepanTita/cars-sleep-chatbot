@@ -1,0 +1,5 @@
+Evaluation,Mean Pred 1,Mean Actual 1,Mean Pred 2,Mean Actual 2,Mean Ref Rating*,Mean Swap Rating*
+Cars,4.5385,3.6923,3.8462,4.0,3.1923,4.1923
+Cars RAG,3.9615,3.9231,3.5769,4.2308,2.6154,3.7692
+Sleep,4.7407,4.0741,4.2593,4.2593,3.7778,4.5
+Sleep RAG,4.7407,4.0,4.4815,4.1852,3.4074,4.6111
