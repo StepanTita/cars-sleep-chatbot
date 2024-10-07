@@ -17,6 +17,8 @@
 # - Sets up language models, embeddings, and vector stores for RAG
 # - Defines a function to load models for each task type (sleep/cars)
 
+# !!! This might take some time on page load because it loads all of the models and populates RAG database on the fly. This is just for the DEMO purposes !!!
+
 
 from threading import Thread
 import streamlit as st
@@ -52,11 +54,10 @@ if "sleep_model" not in st.session_state or "cars_model" not in st.session_state
     from langchain.prompts import PromptTemplate
     from langchain.memory import ConversationBufferMemory
     from langchain_community.document_loaders import TextLoader
-    from langchain.text_splitter import CharacterTextSplitter, NLTKTextSplitter
+    from langchain.text_splitter import NLTKTextSplitter
     from langchain.vectorstores import FAISS
     from langchain.embeddings.huggingface import HuggingFaceEmbeddings
     from langchain.schema.runnable import RunnablePassthrough
-    from langchain.schema import Document
 
     nltk.download("punkt_tab")
 

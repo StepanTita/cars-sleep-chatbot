@@ -136,7 +136,19 @@ The project implements a question-answering system for cars and sleep science do
 
 # Evaluation results
 
-Ratings are in range [1-5]
+## Routing accuracy:
+
+| Class        | Precision | Recall | F1-Score |
+| ------------ | --------- | ------ | -------- |
+| Sleep        | 1.00      | 0.93   | 0.96     |
+| Cars         | 0.93      | 1.00   | 0.96     |
+| Accuracy     |           |        | 0.96     |
+| Macro Avg    | 0.96      | 0.96   | 0.96     |
+| Weighted Avg | 0.96      | 0.96   | 0.96     |
+
+## Response quality:
+
+_Ratings are in range [1-5]_
 
 Explanation:
 - `Mean Ref Rating` is the grade of the expert model output graded against the ground truth (test answer).
@@ -151,8 +163,10 @@ Explanation:
 
 # Demo
 
+<video width="1280" controls>
+  <source src="assets/demo.mov" type="video/mov">
+  Your browser does not support the video tag.
+</video>
 
-https://github.com/user-attachments/assets/e2dec948-a1b5-46a7-9cb5-950c32063ec1
-
-<img width="1393" alt="Screenshot 2024-10-06 at 21 07 11" src="https://github.com/user-attachments/assets/9a36aba3-8c12-4193-8430-8fa5238dc19f">
-<img width="1405" alt="Screenshot 2024-10-06 at 21 07 18" src="https://github.com/user-attachments/assets/b9f228c9-1031-4002-bcf8-05be38b7b8c9">
+<img width="1393" alt="Demo 1 Screenshot" src="assets/demo1.png">
+<img width="1405" alt="Demo 2 Screenshot" src="assets/demo2.png">
