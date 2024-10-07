@@ -134,6 +134,21 @@ The project implements a question-answering system for cars and sleep science do
 - **Timeline**: 3-6 months
 - **Improvements**: State-of-the-art performance, ability to handle multiple domains, highly accurate and reliable responses, scalable system for production use
 
+# Evaluation results
+
+Ratings are in range [1-5]
+
+Explanation:
+- `Mean Ref Rating` is the grade of the expert model output graded against the ground truth (test answer).
+- `Mean Swap Rating` is the mean of the means of ratings when 2 responses (ground truth and predicted) compared without specifying which one is correct, swapping their positions to avoid 1st answer preference bias.
+
+| Evaluation | Mean Ref Rating | Mean Swap Rating |
+| ---------- | --------------- | ---------------- |
+| Cars       | 3.1923          | 4.1923           |
+| Cars RAG   | 2.6154          | 3.7692           |
+| Sleep      | 3.7778          | 4.5000           |
+| Sleep RAG  | 3.4074          | 4.6111           |
+
 # Demo
 
 
