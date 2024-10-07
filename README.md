@@ -133,3 +133,11 @@ The project implements a question-answering system for cars and sleep science do
   - Productionalized CI/CD pipeline for deployment, evaluation and fine-tuning
 - **Timeline**: 3-6 months
 - **Improvements**: State-of-the-art performance, ability to handle multiple domains, highly accurate and reliable responses, scalable system for production use
+
+# Demo
+
+
+https://github.com/user-attachments/assets/e2dec948-a1b5-46a7-9cb5-950c32063ec1
+
+<img width="1393" alt="Screenshot 2024-10-06 at 21 07 11" src="https://github.com/user-attachments/assets/9a36aba3-8c12-4193-8430-8fa5238dc19f">
+<img width="1405" alt="Screenshot 2024-10-06 at 21 07 18" src="https://github.com/user-attachments/assets/b9f228c9-1031-4002-bcf8-05be38b7b8c9">
