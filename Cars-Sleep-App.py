@@ -1,7 +1,25 @@
-import random
-import time
+# This script is a Streamlit application for a Sleep and Cars Expert model.
+
+# Import necessary libraries
+# - Thread for concurrent processing
+# - streamlit for creating the web application interface
+
+# Set up the Streamlit page title
+
+# Define question types and prompts
+# - Two types of questions: sleep and cars
+# - Each type has system, basic, and RAG (Retrieval-Augmented Generation) prompts
+
+# Load the question type classification model
+# - Uses joblib to load a pre-trained logistic regression model
+
+# Load sleep and cars models if not already in session state
+# - Sets up language models, embeddings, and vector stores for RAG
+# - Defines a function to load models for each task type (sleep/cars)
+
+
 from threading import Thread
-import streamlit as st  # type: ignore
+import streamlit as st
 
 st.title("Sleep and Cars Expert models")
 
@@ -85,11 +103,9 @@ if "sleep_model" not in st.session_state or "cars_model" not in st.session_state
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
 
-        return ({
-            "resources": retriever | format_docs, 
-            "question": RunnablePassthrough(), 
-            "chat_history": RunnablePassthrough()
-        } | llm_chain), streamer
+        return (
+            {"resources": retriever | format_docs, "question": RunnablePassthrough(), "chat_history": RunnablePassthrough()} | llm_chain
+        ), streamer
 
     st.session_state.sleep_model = load_model("sleep", use_rag=False)
     st.session_state.cars_model = load_model("cars")
